@@ -16,11 +16,11 @@ import { DiscountVisualization } from "./(components)/discount-visualization";
 export default function ShippingDiscountAnalyzer() {
   const [discountData, setDiscountData] = useState(null);
 
-  console.log(discountData);
-
   const handleSubmit = (data) => {
     setDiscountData(data);
   };
+
+  console.log(discountData);
 
   return (
     <div className="space-y-6">
