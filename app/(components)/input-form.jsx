@@ -40,7 +40,7 @@ export function InputForm({ onSubmit }) {
     try {
       const responses = await Promise.all(
         carriers.map((carrier) =>
-          fetch(`http://127.0.0.1:8000/get-discounts`, {
+          fetch(`https://contract-shipping-api.onrender.com/get-discounts`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
