@@ -9,17 +9,15 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const WhiskerPlot = ({ title, data, spending, setSpending, color }) => {
-  const min = data.Min_Discount - 0.5;
-  const max = data.Max_Discount + 0.5;
+  const min = data.Min_Discount;
+  const max = data.Max_Discount;
   const range = max - min;
   const average = data.Average_Discount;
 
-  const minSavings = Math.abs(
-    Math.max(spending - (1 - data.Max_Discount / 100) * spending)
-  );
-  const maxSavings = Math.abs(
-    Math.max(spending - (1 - data.Min_Discount / 100) * spending)
-  );
+  console.log(data.Min_Discount, data.Max_Discount, data.Average_Discount);
+
+  const minSavings = Math.max(spending * (data.Max_Discount / 100) * -1);
+  const maxSavings = Math.max(spending * (data.Min_Discount / 100) * -1);
 
   return (
     <div className="mb-8">
@@ -117,12 +115,9 @@ export function DiscountVisualization({ carrier, data, annualSpend }) {
   ];
 
   const totalSavings = spendings.reduce((total, spending, index) => {
-    const minSavings = Math.abs(spending * (data[index]["Min Discount"] / 100));
-    const maxSavings = Math.abs(spending * (data[index]["Max Discount"] / 100));
-    return total + (minSavings + maxSavings) / 2;
+    const maxSavings = spending * (data[index]["Min Discount"] / 100) * -1;
+    return total + maxSavings;
   }, 0);
-
-  console.log(data);
 
   return (
     <Card className="w-full mx-auto bg-gray-900 text-white">
