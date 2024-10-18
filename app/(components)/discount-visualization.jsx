@@ -119,16 +119,12 @@ export function DiscountVisualization({ carrier, data, annualSpend }) {
   }
 
   const totalSavings = spendings.reduce((total, spending, index) => {
-    const minSavings = Math.max(
-      0,
-      spending - (1 - data[index].Max_Discount / 100) * spending
-    );
-    const maxSavings = Math.max(
-      0,
-      spending - (1 - data[index].Min_Discount / 100) * spending
-    );
+    const minSavings = Math.abs(spending * (data[index]["Min Discount"] / 100));
+    const maxSavings = Math.abs(spending * (data[index]["Max Discount"] / 100));
     return total + (minSavings + maxSavings) / 2;
   }, 0);
+
+  console.log(data);
 
   return (
     <Card className="w-full mx-auto bg-gray-900 text-white">
@@ -178,15 +174,17 @@ export function DiscountVisualization({ carrier, data, annualSpend }) {
         <div className="mt-4">
           <h4 className="text-lg font-semibold mb-2">Savings Breakdown:</h4>
           {data.map((plot, index) => {
-            const minSavings = Math.max(
-              0,
-              spendings[index] -
-                (1 - plot["Max Discount"] / 100) * spendings[index]
+            const minSavings = Math.abs(
+              Math.max(
+                spendings[index] -
+                  (1 - plot["Max Discount"] / 100) * spendings[index]
+              )
             );
-            const maxSavings = Math.max(
-              0,
-              spendings[index] -
-                (1 - plot["Min Discount"] / 100) * spendings[index]
+            const maxSavings = Math.abs(
+              Math.max(
+                spendings[index] -
+                  (1 - plot["Min Discount"] / 100) * spendings[index]
+              )
             );
             return (
               <div
