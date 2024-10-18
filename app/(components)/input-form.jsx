@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -28,37 +28,60 @@ export function InputForm({ onSubmit }) {
   const [destinationLocations, setDestinationLocations] = useState("");
   const [minWeight, setMinWeight] = useState("");
   const [maxWeight, setMaxWeight] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({
-      companyName,
-      email,
-      companyType,
-      annualSpend,
-      originLocations,
-      destinationLocations,
-      minWeight,
-      maxWeight,
-    });
-  };
+    setIsLoading(true);
+    setError(null);
+    const carriers = ["ups", "fedex", "usps"];
 
+    try {
+      const responses = await Promise.all(
+        carriers.map((carrier) =>
+          fetch(`http://127.0.0.1:8000/get-discounts`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              carrier,
+              annual_spend: annualSpend,
+              top_n_service_types: 5,
+              tolerance: 0.2,
+            }),
+          }).then((response) => {
+            if (!response.ok) {
+              throw new Error(
+                `Failed to fetch ${carrier.toUpperCase()} discounts`
+              );
+            }
+            return response.json();
+          })
+        )
+      );
+
+      const discountData = {
+        ups: responses[0],
+        fedex: responses[1],
+        usps: responses[2],
+      };
+      onSubmit(discountData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label
-          htmlFor="company-name"
-          className="text-lg font-semibold"
-        >
+        <Label htmlFor="company-name" className="text-lg font-semibold">
           Company Name
         </Label>
         <div className="relative">
-          <BuildingIcon
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
+          <BuildingIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Enter your company name"
             className="pl-10 bg-gray-700 text-white border-gray-600 focus:border-blue-500"
@@ -70,16 +93,11 @@ export function InputForm({ onSubmit }) {
       </div>
 
       <div className="space-y-2">
-        <Label
-          htmlFor="email"
-          className="text-lg font-semibold"
-        >
+        <Label htmlFor="email" className="text-lg font-semibold">
           Email Address
         </Label>
         <div className="relative">
-          <MailIcon
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
+          <MailIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             type="email"
             placeholder="Enter your email address"
@@ -92,56 +110,29 @@ export function InputForm({ onSubmit }) {
       </div>
 
       <div className="space-y-2">
-        <Label
-          htmlFor="company-type"
-          className="text-lg font-semibold"
-        >
+        <Label htmlFor="company-type" className="text-lg font-semibold">
           Company Type
         </Label>
-        <Select
-          onValueChange={setCompanyType}
-          required
-        >
-          <SelectTrigger
-            className="bg-gray-700 text-white border-gray-600 focus:border-blue-500"
-          >
-            <SelectValue
-              placeholder="Select company type"
-            />
+        <Select onValueChange={setCompanyType} required>
+          <SelectTrigger className="bg-gray-700 text-white border-gray-600 focus:border-blue-500">
+            <SelectValue placeholder="Select company type" />
           </SelectTrigger>
-          <SelectContent
-            className="bg-gray-700 text-white border-gray-600"
-          >
-            <SelectItem value="ecommerce">
-              E-commerce
-            </SelectItem>
-            <SelectItem value="manufacturing">
-              Manufacturing
-            </SelectItem>
-            <SelectItem value="retail">
-              Retail
-            </SelectItem>
-            <SelectItem value="wholesale">
-              Wholesale
-            </SelectItem>
-            <SelectItem value="other">
-              Other
-            </SelectItem>
+          <SelectContent className="bg-gray-700 text-white border-gray-600">
+            <SelectItem value="ecommerce">E-commerce</SelectItem>
+            <SelectItem value="manufacturing">Manufacturing</SelectItem>
+            <SelectItem value="retail">Retail</SelectItem>
+            <SelectItem value="wholesale">Wholesale</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-2">
-        <Label
-          htmlFor="annual-spend"
-          className="text-lg font-semibold"
-        >
+        <Label htmlFor="annual-spend" className="text-lg font-semibold">
           Annual Shipping Spend (USD)
         </Label>
         <div className="relative">
-          <DollarSignIcon
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
+          <DollarSignIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             type="number"
             placeholder="Enter your annual shipping spend"
@@ -154,16 +145,11 @@ export function InputForm({ onSubmit }) {
       </div>
 
       <div className="space-y-2">
-        <Label
-          htmlFor="origin-locations"
-          className="text-lg font-semibold"
-        >
+        <Label htmlFor="origin-locations" className="text-lg font-semibold">
           Origin Locations
         </Label>
         <div className="relative">
-          <TruckIcon
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
+          <TruckIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Enter origin cities separated by commas"
             className="pl-10 bg-gray-700 text-white border-gray-600 focus:border-blue-500"
@@ -182,9 +168,7 @@ export function InputForm({ onSubmit }) {
           Destination Locations
         </Label>
         <div className="relative">
-          <TruckIcon
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
+          <TruckIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             placeholder="Enter destination cities separated by commas"
             className="pl-10 bg-gray-700 text-white border-gray-600 focus:border-blue-500"
@@ -197,16 +181,11 @@ export function InputForm({ onSubmit }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label
-            htmlFor="min-weight"
-            className="text-lg font-semibold"
-          >
+          <Label htmlFor="min-weight" className="text-lg font-semibold">
             Minimum Package Weight (lbs)
           </Label>
           <div className="relative">
-            <WeightIcon
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            />
+            <WeightIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               type="number"
               placeholder="Min weight"
@@ -218,16 +197,11 @@ export function InputForm({ onSubmit }) {
           </div>
         </div>
         <div className="space-y-2">
-          <Label
-            htmlFor="max-weight"
-            className="text-lg font-semibold"
-          >
+          <Label htmlFor="max-weight" className="text-lg font-semibold">
             Maximum Package Weight (lbs)
           </Label>
           <div className="relative">
-            <WeightIcon
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            />
+            <WeightIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               type="number"
               placeholder="Max weight"
@@ -240,9 +214,11 @@ export function InputForm({ onSubmit }) {
         </div>
       </div>
 
-      <Button type="submit" className="w-full">
-        Analyze Discounts
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Analyzing..." : "Analyze Discounts"}
       </Button>
+
+      {error && <div className="text-red-500 text-center">{error}</div>}
     </form>
   );
 }

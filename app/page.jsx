@@ -14,10 +14,12 @@ import { InputForm } from "./(components)/input-form";
 import { DiscountVisualization } from "./(components)/discount-visualization";
 
 export default function ShippingDiscountAnalyzer() {
-  const [showResults, setShowResults] = useState(false);
+  const [discountData, setDiscountData] = useState(null);
+
+  console.log(discountData);
 
   const handleSubmit = (data) => {
-    setShowResults(true);
+    setDiscountData(data);
   };
 
   return (
@@ -25,11 +27,13 @@ export default function ShippingDiscountAnalyzer() {
       <Card className="bg-gray-800 text-white">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">
-            Shipping Discount Analyzer
+            Contract Discount Analyzer
           </CardTitle>
           <CardDescription className="text-gray-300">
-            Understand appropriate contract level discounts based on your
-            shipping spend
+            Enter your shipping details below and our tool will compare your
+            shipping requirements with that of hundreds of real contracts from
+            our proprietary dataset to help you negotiate the best discounts for
+            each major contract item.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -37,7 +41,7 @@ export default function ShippingDiscountAnalyzer() {
         </CardContent>
       </Card>
 
-      {showResults && (
+      {discountData && (
         <Card className="bg-gray-800 text-white">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
@@ -53,17 +57,26 @@ export default function ShippingDiscountAnalyzer() {
               </TabsList>
               <TabsContent value="ups">
                 <ScrollArea className="h-[600px] w-full rounded-md border border-gray-700 p-4">
-                  <DiscountVisualization carrier="UPS" />
+                  <DiscountVisualization
+                    carrier="UPS"
+                    data={discountData.ups}
+                  />
                 </ScrollArea>
               </TabsContent>
               <TabsContent value="fedex">
                 <ScrollArea className="h-[600px] w-full rounded-md border border-gray-700 p-4">
-                  <DiscountVisualization carrier="FedEx" />
+                  <DiscountVisualization
+                    carrier="FedEx"
+                    data={discountData.fedex}
+                  />
                 </ScrollArea>
               </TabsContent>
               <TabsContent value="usps">
                 <ScrollArea className="h-[600px] w-full rounded-md border border-gray-700 p-4">
-                  <DiscountVisualization carrier="USPS" />
+                  <DiscountVisualization
+                    carrier="USPS"
+                    data={discountData.usps}
+                  />
                 </ScrollArea>
               </TabsContent>
             </Tabs>
