@@ -88,12 +88,20 @@ export function DiscountVisualization({ carrier, data, annualSpend }) {
     return percent.toFixed(0);
   };
 
-  console.log(getRandomPercentage());
-  // Random percentage between 5% and 10%
-
+  const carrierData = data.error ? [] : data;
   const [spendings, setSpendings] = useState(
-    data.map(() => (annualSpend * getRandomPercentage()) / 100)
+    carrierData.map(() => (annualSpend * getRandomPercentage()) / 100)
   );
+
+  if (data.error) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{data.error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   const colors = [
     "bg-blue-500",
@@ -107,16 +115,6 @@ export function DiscountVisualization({ carrier, data, annualSpend }) {
     "bg-teal-500",
     "bg-cyan-500",
   ];
-
-  if (data.error) {
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{data.error}</AlertDescription>
-      </Alert>
-    );
-  }
 
   const totalSavings = spendings.reduce((total, spending, index) => {
     const minSavings = Math.abs(spending * (data[index]["Min Discount"] / 100));
