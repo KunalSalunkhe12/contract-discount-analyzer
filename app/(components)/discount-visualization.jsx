@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -82,8 +82,18 @@ const WhiskerPlot = ({ title, data, spending, setSpending, color }) => {
   );
 };
 
-export function DiscountVisualization({ carrier, data }) {
-  const [spendings, setSpendings] = useState(Array(data.length).fill(1000));
+export function DiscountVisualization({ carrier, data, annualSpend }) {
+  const getRandomPercentage = () => {
+    const percent = Math.random() * 5 + 5;
+    return percent.toFixed(0);
+  };
+
+  console.log(getRandomPercentage());
+  // Random percentage between 5% and 10%
+
+  const [spendings, setSpendings] = useState(
+    data.map(() => (annualSpend * getRandomPercentage()) / 100)
+  );
 
   const colors = [
     "bg-blue-500",
@@ -153,7 +163,7 @@ export function DiscountVisualization({ carrier, data }) {
               Contracts_Count: plot["Contracts Count"],
               Discount_Values: plot["Discount Values"],
             }}
-            spending={spendings[index]}
+            spending={spendings[index].toFixed(0)}
             setSpending={(value) => {
               const newSpendings = [...spendings];
               newSpendings[index] = value;

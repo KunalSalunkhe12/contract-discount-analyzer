@@ -66,6 +66,7 @@ export function InputForm({ onSubmit }) {
         ups: responses[0],
         fedex: responses[1],
         usps: responses[2],
+        annualSpend,
       };
       onSubmit(discountData);
     } catch (err) {

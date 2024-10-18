@@ -60,6 +60,7 @@ export default function ShippingDiscountAnalyzer() {
                   <DiscountVisualization
                     carrier="UPS"
                     data={discountData.ups}
+                    annualSpend={discountData.annualSpend}
                   />
                 </ScrollArea>
               </TabsContent>
@@ -68,6 +69,7 @@ export default function ShippingDiscountAnalyzer() {
                   <DiscountVisualization
                     carrier="FedEx"
                     data={discountData.fedex}
+                    annualSpend={discountData.annualSpend}
                   />
                 </ScrollArea>
               </TabsContent>
@@ -76,6 +78,7 @@ export default function ShippingDiscountAnalyzer() {
                   <DiscountVisualization
                     carrier="USPS"
                     data={discountData.usps}
+                    annualSpend={discountData.annualSpend}
                   />
                 </ScrollArea>
               </TabsContent>
